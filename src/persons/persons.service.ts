@@ -51,9 +51,10 @@ export class PersonsService {
     }
 
     handleGeneration(arrayGenerations, people, max_v) {
+        const current_v = arrayGenerations[0].generation_v;
         for (let j = 0; j < arrayGenerations.length; j++) {
             let childrens = [];
-            people.forEach((person) => {
+            people[current_v].forEach((person) => {
                 if (person.parentId == arrayGenerations[j]._id) {
                     childrens.push(person);
                 }
@@ -82,11 +83,18 @@ export class PersonsService {
         try {
             let people = await this.personModel.find().sort({ generation_v: 'asc' });
             const max_v = people[people.length - 1].generation_v;
-            let arrayGenerations = await this.personModel.find({
-                generation_v: 1
-            });
-            arrayGenerations = this.handleGeneration(arrayGenerations, people, max_v);
-            const result = arrayGenerations;
+            // let arrayGenerations = await this.personModel.find({
+            //     generation_v: 1
+            // });
+            let arrayGenerations = [];
+            for (let i = 1; i <= max_v; i++) {
+                const people = await this.personModel.find({
+                    generation_v: i
+                });
+                arrayGenerations.push(people);
+            }
+            arrayGenerations[0] = this.handleGeneration(arrayGenerations[0], arrayGenerations, max_v);
+            const result = arrayGenerations[0];
             return {
                 code: 200,
                 data: {
@@ -203,6 +211,24 @@ export class PersonsService {
                     success: true,
                     birth,
                     death,
+                }
+            }
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
+    async deletePerson(id: string) {
+        try {
+            const person = await this.personModel.findByIdAndDelete(id);
+            if(!person) {
+                throw new BadRequestException('person not found');
+            }
+            return {
+                data: {
+                    code: 200,
+                    success: true,
                 }
             }
         } catch (err) {
