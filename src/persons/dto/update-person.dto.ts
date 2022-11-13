@@ -29,5 +29,8 @@ export class UpdatePersonDTO {
     visible?: boolean;
 
     @ApiProperty()
+    parentId?: string;
+
+    @ApiProperty()
     childrens?: Array<string>;
 }
