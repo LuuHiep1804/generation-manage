@@ -14,6 +14,10 @@ export class PersonsService {
 
     async createPerson(data) {
         try {
+            if(data.parentId) {
+                const parent = await this.personModel.findById(data.parentId);
+                data.generation_v = parent.generation_v + 1;
+            }
             const person = await this.personModel.create({
                 ...data,
             });
