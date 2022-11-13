@@ -7,7 +7,7 @@ import 'dotenv/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.DATABASE_URL),
+    MongooseModule.forRoot(process.env.DATABASE_URL || 'mongodb+srv://hiepluu184201:Hiep184*@generation.w5h1xfc.mongodb.net/?retryWrites=true&w=majority'),
     PersonsModule
   ],
   controllers: [AppController],
