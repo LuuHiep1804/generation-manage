@@ -37,11 +37,29 @@ export class PersonsService {
             if (!person) {
                 throw new BadRequestException('person not found');
             }
+            let death = '';
+            if (person.date_of_death) {
+                death = moment(person.date_of_birth).add(7, 'hours').format('DD/MM/YYYY');
+            }
+            const formatPerson = {
+                "_id": person._id,
+                "name": person.name,
+                "gender": person.gender,
+                "date_of_birth": moment(person.date_of_birth).add(7, 'hours').format('DD/MM/YYYY'),
+                "date_of_death": death,
+                "marital_status": person.marital_status,
+                "wife": person.wife,
+                "generation_v": person.generation_v,
+                "visible": person.visible,
+                "parentId": person.parentId,
+                "current_residence": person.current_residence,
+                "native_land": person.native_land,
+            }
             return {
                 code: 200,
                 data: {
                     success: true,
-                    person,
+                    formatPerson,
                 }
             };
         } catch (err) {
@@ -59,7 +77,7 @@ export class PersonsService {
                     childrens.push(person);
                 }
             });
-            if(childrens[0] && childrens[0].generation_v < max_v) {
+            if (childrens[0] && childrens[0].generation_v < max_v) {
                 childrens = this.handleGeneration(childrens, people, max_v);
             }
             arrayGenerations[j] = {
@@ -91,7 +109,25 @@ export class PersonsService {
                 const people = await this.personModel.find({
                     generation_v: i
                 });
-                arrayGenerations.push(people);
+                const formatPeople = people.map((person) => {
+                    let death = '';
+                    if (person.date_of_death) {
+                        death = moment(person.date_of_death).add(7, 'hours').format('DD/MM/YYYY');
+                    }
+                    return {
+                        "_id": person._id,
+                        "name": person.name,
+                        "gender": person.gender,
+                        "date_of_birth": moment(person.date_of_birth).add(7, 'hours').format('DD/MM/YYYY'),
+                        "date_of_death": death,
+                        "marital_status": person.marital_status,
+                        "wife": person.wife,
+                        "generation_v": person.generation_v,
+                        "visible": person.visible,
+                        "parentId": person.parentId,
+                    }
+                })
+                arrayGenerations.push(formatPeople);
             }
             arrayGenerations[0] = this.handleGeneration(arrayGenerations[0], arrayGenerations, max_v);
             const result = arrayGenerations[0];
@@ -152,19 +188,19 @@ export class PersonsService {
             const birth = [];
             const death = [];
             people.forEach((person) => {
-                const checkBirth = moment(person.date_of_birth).format('DD/MM');
-                const checkDeath = moment(person.date_of_death).format('DD/MM');
+                const checkBirth = moment(person.date_of_birth).add(7, 'hours').format('DD/MM');
+                const checkDeath = moment(person.date_of_death).add(7, 'hours').format('DD/MM');
                 if (checkBirth === now && checkDeath === 'Invalid date') {
                     birth.push({
                         name: person.name,
-                        date_of_birth: moment(person.date_of_birth).format('DD/MM/YYYY'),
+                        date_of_birth: moment(person.date_of_birth).add(7, 'hours').format('DD/MM/YYYY'),
                         years: Number(moment(new Date(Date.now())).format('YYYY')) - Number(moment(person.date_of_birth).format('YYYY'))
                     });
                 }
                 if (checkDeath === now) {
                     death.push({
                         name: person.name,
-                        date_of_death: moment(person.date_of_death).format('DD/MM/YYYY')
+                        date_of_death: moment(person.date_of_death).add(7, 'hours').format('DD/MM/YYYY')
                     });
                 }
             });
@@ -189,19 +225,19 @@ export class PersonsService {
             const birth = [];
             const death = [];
             people.forEach((person) => {
-                const checkBirth = moment(person.date_of_birth).format('MM');
-                const checkDeath = moment(person.date_of_death).format('MM');
+                const checkBirth = moment(person.date_of_birth).add(7, 'hours').format('MM');
+                const checkDeath = moment(person.date_of_death).add(7, 'hours').format('MM');
                 if (checkBirth === now && checkDeath === 'Invalid date') {
                     birth.push({
                         name: person.name,
-                        date_of_birth: moment(person.date_of_birth).format('DD/MM/YYYY'),
+                        date_of_birth: moment(person.date_of_birth).add(7, 'hours').format('DD/MM/YYYY'),
                         years: Number(moment(new Date(Date.now())).format('YYYY')) - Number(moment(person.date_of_birth).format('YYYY'))
                     });
                 }
                 if (checkDeath === now) {
                     death.push({
                         name: person.name,
-                        date_of_death: moment(person.date_of_death).format('DD/MM/YYYY')
+                        date_of_death: moment(person.date_of_death).add(7, 'hours').format('DD/MM/YYYY')
                     });
                 }
             });
@@ -222,7 +258,7 @@ export class PersonsService {
     async deletePerson(id: string) {
         try {
             const person = await this.personModel.findByIdAndDelete(id);
-            if(!person) {
+            if (!person) {
                 throw new BadRequestException('person not found');
             }
             return {

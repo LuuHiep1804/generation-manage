@@ -16,10 +16,14 @@ export class Person {
     })
     date_of_death: Date;
 
-    @Prop()
+    @Prop({
+        default: null
+    })
     current_residence: string;
 
-    @Prop()
+    @Prop({
+        default: null
+    })
     native_land: string;
 
     @Prop({

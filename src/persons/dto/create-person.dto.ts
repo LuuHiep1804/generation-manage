@@ -9,10 +9,10 @@ export class CreatePersonDTO {
     gender: string;
 
     @ApiProperty()
-    date_of_birth: string;
+    date_of_birth: Date;
 
     @ApiProperty()
-    date_of_death: string;
+    date_of_death: Date;
 
     @ApiProperty()
     current_residence?: string;
