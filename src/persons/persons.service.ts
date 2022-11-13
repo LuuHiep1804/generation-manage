@@ -14,7 +14,7 @@ export class PersonsService {
 
     async createPerson(data) {
         try {
-            if(data.parentId) {
+            if (data.parentId) {
                 const parent = await this.personModel.findById(data.parentId);
                 data.generation_v = parent.generation_v + 1;
             }
@@ -95,6 +95,8 @@ export class PersonsService {
                 generation_v: arrayGenerations[j].generation_v,
                 visible: arrayGenerations[j].visible,
                 parentId: arrayGenerations[j].parentId,
+                current_residence: arrayGenerations[j].current_residence,
+                native_land: arrayGenerations[j].native_land,
                 childrens,
             }
         }
@@ -129,6 +131,8 @@ export class PersonsService {
                         "generation_v": person.generation_v,
                         "visible": person.visible,
                         "parentId": person.parentId,
+                        "current_residence": person.current_residence,
+                        "native_land": person.native_land,
                     }
                 })
                 arrayGenerations.push(formatPeople);
